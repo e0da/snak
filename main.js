@@ -7,7 +7,7 @@ var game = new Phaser.Game(WIDTH, HEIGHT, Phaser.AUTO, 'game', {
   preload: preload, create: create, update: update})
 
 function preload() {
-  this.load.image('player', '../assets/Player.png')
+  this.load.image('player', 'assets/Player.png')
 }
 
 function create() {
