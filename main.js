@@ -60,15 +60,15 @@ function renderDebugText(player) {
     let vely  = round(player.sprite.body.velocity.x)
     let rot   = round(player.sprite.body.rotation)
     let speed = round(player.sprite.body.speed)
-    let posx  = player.sprite.position.x
-    let posy  = player.sprite.position.y
+    let posx  = round(player.sprite.position.x)
+    let posy  = round(player.sprite.position.y)
 
     let tvelx  = round(player.tail[0].body.velocity.x)
     let tvely  = round(player.tail[0].body.velocity.x)
     let trot   = round(player.tail[0].body.rotation)
     let tspeed = round(player.tail[0].body.speed)
-    let tposx  = player.tail[0].position.x
-    let tposy  = player.tail[0].position.y
+    let tposx  = round(player.tail[0].position.x)
+    let tposy  = round(player.tail[0].position.y)
 
     return debug.innerHTML =
     `Speed: ${speed}
