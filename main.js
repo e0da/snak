@@ -53,19 +53,19 @@ function round(num) {
 function renderDebugText(player) {
   let debug = document.querySelector('#debug')
   return function () {
-    let velx  = round(player.sprite.body.velocity.x)
-    let vely  = round(player.sprite.body.velocity.x)
-    let rot   = round(player.sprite.body.rotation)
-    let speed = round(player.sprite.body.speed)
-    let posx  = round(player.sprite.position.x)
-    let posy  = round(player.sprite.position.y)
+    let velx  = round(player.head.body.velocity.x)
+    let vely  = round(player.head.body.velocity.x)
+    let rot   = round(player.head.body.rotation)
+    let speed = round(player.head.body.speed)
+    let posx  = round(player.head.position.x)
+    let posy  = round(player.head.position.y)
 
-    let tvelx  = round(player.tail[0].body.velocity.x)
-    let tvely  = round(player.tail[0].body.velocity.x)
-    let trot   = round(player.tail[0].body.rotation)
-    let tspeed = round(player.tail[0].body.speed)
-    let tposx  = round(player.tail[0].position.x)
-    let tposy  = round(player.tail[0].position.y)
+    let tvelx  = round(player.tail.children[0].body.velocity.x)
+    let tvely  = round(player.tail.children[0].body.velocity.x)
+    let trot   = round(player.tail.children[0].body.rotation)
+    let tspeed = round(player.tail.children[0].body.speed)
+    let tposx  = round(player.tail.children[0].position.x)
+    let tposy  = round(player.tail.children[0].position.y)
 
     return debug.innerHTML =
     `Speed: ${speed}

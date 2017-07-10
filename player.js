@@ -8,9 +8,9 @@ class Player {
   get center()          { return { x: game.width/2, y: game.height/2 } }
 
   constructor() {
-    this.sprite        = this.createSegment()
-    this.tail          = []
-    this.sprite.update = this.updateSprite(this)
+    this.head        = this.createSegment()
+    this.tail        = game.add.group()
+    this.head.update = this.updateHeadSprite(this)
   }
 
   leftKey() {
@@ -22,10 +22,10 @@ class Player {
   }
 
   turn(direction) {
-    this.sprite.body.rotation += this.turnSpeed * direction
+    this.head.body.rotation += this.turnSpeed * direction
   }
 
-  updateSprite(player) {
+  updateHeadSprite(player) {
     return function() {
       this.body.velocity = player.velocityVector(this)
       player.updateTail()
@@ -33,9 +33,9 @@ class Player {
   }
 
   grow() {
-    let prev = this.tail.length === 0 ? this.sprite
-                                      : this.tail[this.tail.length-1]
-    this.tail[this.tail.length] = this.createSegment(prev)
+    let prev = this.tail.length === 0 ? this.head
+                                      : this.tail.children[this.tail.length-1]
+    this.tail.add(this.createSegment(prev))
   }
 
   createSegment(prev) {
@@ -48,18 +48,19 @@ class Player {
   }
 
   updateTail() {
-    let prev = this.sprite
-    for (let i = 0; i < this.tail.length; i++) {
+    let prev = this.head
+    let sprites = this.tail.children
+    for (let i = 0; i < sprites.length; i++) {
       // N.B. I don't get why game.physics.arcade.angleBetween doesn't work
       // like I expect it to, so straight math for the rotation.
-      this.tail[i].rotation =
-        -Math.atan2(this.tail[i].position.x - prev.position.x,
-                    this.tail[i].position.y - prev.position.y)
+      sprites[i].rotation =
+        -Math.atan2(sprites[i].position.x - prev.position.x,
+                    sprites[i].position.y - prev.position.y)
       if (game.physics.arcade.distanceBetween(sprites[i], prev)
           > this.segmentDistance) {
-        this.tail[i].body.velocity = this.velocityVector(this.tail[i])
+        sprites[i].body.velocity = this.velocityVector(sprites[i])
       }
-      prev = this.tail[i]
+      prev = sprites[i]
     }
   }
 
