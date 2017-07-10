@@ -1,5 +1,7 @@
 'use strict'
 
+// TODO player should have higher Z-index than goals
+
 var game = new Phaser.Game(800, 600, Phaser.AUTO, 'game', {
   preload: preload, create: create, update: update})
 
@@ -48,10 +50,20 @@ function update() {
     if (this.controls[key].isDown) this.player[`${key}Key`]()
   }.bind(this))
 
+  if (game.input.activePointer.isDown) {
+    if (game.input.activePointer.position.x < game.width / 2) {
+      this.player.leftKey()
+    }
+    else {
+      this.player.rightKey()
+    }
+  }
+
   sometimes(0.01, addRandomGoal)
   game.physics.arcade.overlap(this.player.head, this.goals, win)
   game.physics.arcade.overlap(this.player.head, this.player.tail, lose)
 
+  // renderScore()
   // renderDebugText()
 }
 

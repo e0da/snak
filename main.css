@@ -1,7 +1,9 @@
 html, body {
   background-color: #333;
+  font-size: 16px;
   color: #efefef;
   margin: 1vh;
+  font-family: "Open Sans", arial, sans-serif;
 }
 
 #page_container {
