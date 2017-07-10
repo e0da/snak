@@ -5,17 +5,17 @@ var game = new Phaser.Game(800, 600, Phaser.AUTO, 'game', {
 
 function preload() {
   this.load.image('player', 'assets/Player.png')
+  this.load.image('goal', 'assets/Light.png')
 }
 
 function create() {
+
+  window.ctx = this
+
   this.physics.startSystem(Phaser.Physics.ARCADE)
   this.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL
 
-  this.player = new Player()
-
-  for (let i = 0; i < 20; i++) {
-    this.player.grow()
-  }
+  initializeSprites()
 
   var cursors = this.input.keyboard.createCursorKeys()
   this.controls = {
@@ -35,14 +35,55 @@ function create() {
   ])
 }
 
+function initializeSprites() {
+  ctx.player = new Player()
+  ctx.goals  = game.add.group()
+  ctx.player.grow()
+  ctx.player.grow()
+}
+
 function update() {
-  // this.physics.arcade.collide(players, food, shootRock)
 
   ['left', 'right'].forEach(function (key) {
     if (this.controls[key].isDown) this.player[`${key}Key`]()
   }.bind(this))
 
-  renderDebugText(this.player)()
+  sometimes(0.01, addRandomGoal)
+  game.physics.arcade.overlap(this.player.head, this.goals, win)
+  game.physics.arcade.overlap(this.player.head, this.player.tail, lose)
+
+  renderDebugText()
+}
+
+function win(_head, goal) {
+  ctx.player.grow()
+  goal.destroy()
+}
+
+function lose(_head, tailSegment) {
+  if (ctx.player.tail.children.indexOf(tailSegment) > 1) {
+    ctx.goals.destroy()
+    ctx.player.tail.destroy()
+    ctx.player.head.destroy()
+    initializeSprites()
+  }
+}
+
+function sometimes(probability, callback) {
+  if ((Math.random()) > (1 - probability)) {
+    callback()
+  }
+}
+
+function addRandomGoal() {
+  let position = randomEmptyPosition()
+  ctx.goals.add(new Goal(randomEmptyPosition()).sprite)
+}
+
+// TODO Check whether it's empty :P
+function randomEmptyPosition() {
+  return new Phaser.Point(Math.floor(Math.random() * game.width),
+                          Math.floor(Math.random() * game.height))
 }
 
 function round(num) {
@@ -50,32 +91,20 @@ function round(num) {
   return Math.floor(num * precision) / precision
 }
 
-function renderDebugText(player) {
+function renderDebugText() {
   let debug = document.querySelector('#debug')
-  return function () {
-    let velx  = round(player.head.body.velocity.x)
-    let vely  = round(player.head.body.velocity.x)
-    let rot   = round(player.head.body.rotation)
-    let speed = round(player.head.body.speed)
-    let posx  = round(player.head.position.x)
-    let posy  = round(player.head.position.y)
 
-    let tvelx  = round(player.tail.children[0].body.velocity.x)
-    let tvely  = round(player.tail.children[0].body.velocity.x)
-    let trot   = round(player.tail.children[0].body.rotation)
-    let tspeed = round(player.tail.children[0].body.speed)
-    let tposx  = round(player.tail.children[0].position.x)
-    let tposy  = round(player.tail.children[0].position.y)
+  let velx  = round(ctx.player.head.body.velocity.x)
+  let vely  = round(ctx.player.head.body.velocity.x)
+  let rot   = round(ctx.player.head.body.rotation)
+  let speed = round(ctx.player.head.body.speed)
+  let posx  = round(ctx.player.head.position.x)
+  let posy  = round(ctx.player.head.position.y)
 
-    return debug.innerHTML =
-    `Speed: ${speed}
-     Position: ${posx},${posy}
-     Rotation: ${rot}
-     Velocity vector: ${velx},${vely}
-     Tail Speed: ${tspeed}
-     Tail Position: ${tposx},${tposy}
-     Tail Rotation: ${trot}
-     Tail Velocity vector: ${tvelx},${tvely}
-    `
-  }
+  return debug.innerHTML =
+  `Speed: ${speed}
+   Position: ${posx},${posy}
+   Rotation: ${rot}
+   Velocity vector: ${velx},${vely}
+  `
 }

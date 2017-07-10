@@ -39,8 +39,8 @@ class Player {
   }
 
   createSegment(prev) {
-    let location = prev ? prev.position.clone() : this.center
-    let sprite = game.add.sprite(location.x, location.y, 'player')
+    let position = prev ? prev.position.clone() : this.center
+    let sprite = game.add.sprite(position.x, position.y, 'player')
     game.physics.arcade.enable(sprite)
     sprite.body.collideWorldBounds = true
     sprite.anchor.setTo(0.5, 0.5)
