@@ -5,6 +5,8 @@
 var game = new Phaser.Game(800, 600, Phaser.AUTO, 'game', {
   preload: preload, create: create, update: update})
 
+var initialSize = 2
+
 function preload() {
   this.load.image('player', 'assets/Player.png')
   this.load.image('goal', 'assets/Light.png')
@@ -18,6 +20,8 @@ function create() {
   this.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL
 
   initializeSprites()
+
+  this.text = game.add.text(0, 0, '0', {fill: '#00ff00'})
 
   var cursors = this.input.keyboard.createCursorKeys()
   this.controls = {
@@ -40,8 +44,9 @@ function create() {
 function initializeSprites() {
   ctx.player = new Player()
   ctx.goals  = game.add.group()
-  ctx.player.grow()
-  ctx.player.grow()
+  for (let i = 0; i < initialSize; i++) {
+    ctx.player.grow()
+  }
 }
 
 function update() {
@@ -63,7 +68,7 @@ function update() {
   game.physics.arcade.overlap(this.player.head, this.goals, win)
   game.physics.arcade.overlap(this.player.head, this.player.tail, lose)
 
-  // renderScore()
+  renderScore()
   // renderDebugText()
 }
 
@@ -101,6 +106,10 @@ function randomEmptyPosition() {
 function round(num) {
   let precision = 10
   return Math.floor(num * precision) / precision
+}
+
+function renderScore() {
+  ctx.text.setText(ctx.player.tail.length - initialSize)
 }
 
 function renderDebugText() {
