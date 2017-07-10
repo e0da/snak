@@ -19,4 +19,7 @@ html, body {
 #debug {
   white-space: pre-line;
   vertical-align: top;
+  font-family: "DejaVu Sans Mono Book", monospace;
+  font-size: 0.7rem;
+  line-height: 0.9rem;
 }
