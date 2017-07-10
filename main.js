@@ -52,7 +52,7 @@ function update() {
   game.physics.arcade.overlap(this.player.head, this.goals, win)
   game.physics.arcade.overlap(this.player.head, this.player.tail, lose)
 
-  renderDebugText()
+  // renderDebugText()
 }
 
 function win(_head, goal) {
