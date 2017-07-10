@@ -1,9 +1,6 @@
 'use strict'
 
-var WIDTH = 800
-var HEIGHT = 600
-
-var game = new Phaser.Game(WIDTH, HEIGHT, Phaser.AUTO, 'game', {
+var game = new Phaser.Game(800, 600, Phaser.AUTO, 'game', {
   preload: preload, create: create, update: update})
 
 function preload() {
@@ -14,7 +11,7 @@ function create() {
   this.physics.startSystem(Phaser.Physics.ARCADE)
   this.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL
 
-  this.player = new Player(this, WIDTH, HEIGHT)
+  this.player = new Player()
 
   for (let i = 0; i < 20; i++) {
     this.player.grow()
