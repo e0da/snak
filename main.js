@@ -8,37 +8,46 @@ var game = new Phaser.Game(800, 600, Phaser.AUTO, 'game', {
 var initialSize = 2
 
 function preload() {
+  window.ctx = this
+
   this.load.image('player', 'assets/Player.png')
   this.load.image('goal', 'assets/Light.png')
 }
 
 function create() {
 
-  window.ctx = this
-
-  this.physics.startSystem(Phaser.Physics.ARCADE)
-  this.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL
+  ctx.physics.startSystem(Phaser.Physics.ARCADE)
+  ctx.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL
 
   initializeSprites()
 
-  this.text = game.add.text(0, 0, '0', {fill: '#00ff00'})
+  ctx.score     = 0
+  ctx.highScore = getHighScore()
 
-  var cursors = this.input.keyboard.createCursorKeys()
-  this.controls = {
+  ctx.scoreText     = game.add.text(0,          0, '0', {fill: '#00ff00'})
+  ctx.highScoreText = game.add.text(game.width, 0, '0', {fill: '#00ff00'})
+  ctx.highScoreText.anchor = new Phaser.Point(1, 0)
+
+  var cursors = ctx.input.keyboard.createCursorKeys()
+  ctx.controls = {
     up:       cursors.up,
     down:     cursors.down,
     left:     cursors.left,
     right:    cursors.right,
-    spacebar: this.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR),
+    spacebar: ctx.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR),
   }
 
-  this.input.keyboard.addKeyCapture([
+  ctx.input.keyboard.addKeyCapture([
     Phaser.Keyboard.LEFT,
     Phaser.Keyboard.RIGHT,
     Phaser.Keyboard.UP,
     Phaser.Keyboard.DOWN,
     Phaser.Keyboard.SPACEBAR,
   ])
+}
+
+function getHighScore() {
+  return localStorage.getItem('highScore') || 0
 }
 
 function initializeSprites() {
@@ -51,25 +60,33 @@ function initializeSprites() {
 
 function update() {
 
+  // Handle input
   ['left', 'right'].forEach(function (key) {
-    if (this.controls[key].isDown) this.player[`${key}Key`]()
-  }.bind(this))
+    if (ctx.controls[key].isDown) ctx.player[`${key}Key`]()
+  }.bind(ctx))
 
   if (game.input.activePointer.isDown) {
     if (game.input.activePointer.position.x < game.width / 2) {
-      this.player.leftKey()
+      ctx.player.leftKey()
     }
     else {
-      this.player.rightKey()
+      ctx.player.rightKey()
     }
   }
 
+  // DO STUFF! Main game logic
   sometimes(0.01, addRandomGoal)
-  game.physics.arcade.overlap(this.player.head, this.goals, win)
-  game.physics.arcade.overlap(this.player.head, this.player.tail, lose)
+  game.physics.arcade.overlap(ctx.player.head, ctx.goals, win)
+  game.physics.arcade.overlap(ctx.player.head, ctx.player.tail, lose)
 
-  renderScore()
-  // renderDebugText()
+  // Set score
+  ctx.score = ctx.player.tail.length - initialSize
+
+  renderScores()
+
+  if (window.DEBUG) {
+    renderDebugText()
+  }
 }
 
 function win(_head, goal) {
@@ -79,11 +96,17 @@ function win(_head, goal) {
 
 function lose(_head, tailSegment) {
   if (ctx.player.tail.children.indexOf(tailSegment) > 1) {
+    updateHighScore()
     ctx.goals.destroy()
     ctx.player.tail.destroy()
     ctx.player.head.destroy()
     initializeSprites()
   }
+}
+
+function updateHighScore() {
+  ctx.highScore = ctx.score
+  localStorage.setItem('highScore', ctx.highScore)
 }
 
 function sometimes(probability, callback) {
@@ -108,8 +131,9 @@ function round(num) {
   return Math.floor(num * precision) / precision
 }
 
-function renderScore() {
-  ctx.text.setText(ctx.player.tail.length - initialSize)
+function renderScores() {
+  ctx.scoreText.setText(ctx.score)
+  ctx.highScoreText.setText(ctx.highScore)
 }
 
 function renderDebugText() {
