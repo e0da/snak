@@ -6,6 +6,18 @@ html, body {
   font-family: "Open Sans", arial, sans-serif;
 }
 
+a, a:visited, a:hover, a:active {
+  color: #0ff;
+}
+
+a, a:visited, a:active {
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
 #page_container {
   display: flex;
   flex-direction: column;

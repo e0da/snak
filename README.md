@@ -8,9 +8,9 @@ Assets
 ------
 
 While I'm sketching this I'm using placeholder art mostly from
-<http://opengameart.org>. Until I settle on final assets or replace them I'm
-keeping the assets in a separate local folder to avoid redistributing somebody
-else's work without attribution.
+<http://opengameart.org>. If you feel I'm using an asset that you created
+inappropriately, please tell me and I'll fix the problem. But for now I'm using
+a couple of simple free graphics in a prototype and not for profit.
 
 Copyright and License
 ---------------------
