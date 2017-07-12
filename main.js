@@ -86,7 +86,7 @@ function update() {
 
 function win(_head, goal) {
   ctx.player.grow()
-  goal.destroy()
+  goal.kill()
 }
 
 function lose(_head, tailSegment) {
