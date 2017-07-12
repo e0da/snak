@@ -8,7 +8,7 @@ class Player {
   get CENTER()             { return { x: game.width/2, y: game.height/2 } }
   get DEGREES_PER_RADIAN() { return 57.2958 }
   get MAX_SIZE()           { return 100 }
-  get HEAD_SIZE()          { return 50 }
+  get HEAD_SIZE()          { return 40 }
   get SEGMENT_SIZE()       { return 20 }
 
   constructor(initialSize) {
