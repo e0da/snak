@@ -92,11 +92,16 @@ function win(_head, goal) {
 function lose(_head, tailSegment) {
   if (ctx.player.tail.children.indexOf(tailSegment) > 1) {
     updateHighScore()
-    ctx.goals.destroy()
-    ctx.player.tail.destroy()
-    ctx.player.head.destroy()
-    initializeSprites()
+    reset()
   }
+}
+
+function reset() {
+  ctx.goals.destroy()
+  ctx.player.tail.destroy()
+  ctx.player.head.destroy()
+  ctx.highScore = getHighScore()
+  initializeSprites()
 }
 
 function updateHighScore() {
