@@ -105,7 +105,7 @@ function reset() {
 }
 
 function updateHighScore() {
-  ctx.highScore = ctx.score
+  ctx.highScore = Math.max(localStorage.getItem('highScore'), ctx.score)
   localStorage.setItem('highScore', ctx.highScore)
 }
 
