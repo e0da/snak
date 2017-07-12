@@ -145,11 +145,14 @@ function renderDebugText() {
   let speed = round(ctx.player.head.body.speed)
   let posx  = round(ctx.player.head.position.x)
   let posy  = round(ctx.player.head.position.y)
+  let hvelx = round(ctx.player.head.body.velocity.x)
+  let hvely = round(ctx.player.head.body.velocity.y)
 
-  return debug.innerHTML =
-  `Speed: ${speed}
-   Position: ${posx},${posy}
-   Rotation: ${rot}
-   Velocity vector: ${velx},${vely}
+  return debug.innerHTML = `
+    Head Velocity: ${hvelx},${hvely}
+    Speed: ${speed}
+    Position: ${posx},${posy}
+    Rotation: ${rot}
+    Velocity vector: ${velx},${vely}
   `
 }

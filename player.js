@@ -2,10 +2,11 @@
 
 class Player {
 
-  get turnSpeed()       { return 3 }
-  get speed()           { return 200 }
-  get segmentDistance() { return 50 }
-  get center()          { return { x: game.width/2, y: game.height/2 } }
+  get TURN_SPEED()         { return 3 }
+  get SPEED()              { return -200 /* y-axis is negative; so is speed */ }
+  get SEGMENT_DISTANCE()   { return 50 }
+  get CENTER()             { return { x: game.width/2, y: game.height/2 } }
+  get DEGREES_PER_RADIAN() { return 57.2958 }
 
   constructor() {
     this.head        = this.createSegment()
@@ -22,12 +23,12 @@ class Player {
   }
 
   turn(direction) {
-    this.head.body.rotation += this.turnSpeed * direction
+    this.head.body.rotation += this.TURN_SPEED * direction
   }
 
   updateHeadSprite(player) {
     return function() {
-      this.body.velocity = player.velocityVector(this)
+      player.updateVelocityVector(this)
       player.updateTail()
     }
   }
@@ -39,7 +40,7 @@ class Player {
   }
 
   createSegment(prev) {
-    let position = prev ? prev.position.clone() : this.center
+    let position = prev ? prev.position.clone() : this.CENTER
     let sprite = game.add.sprite(position.x, position.y, 'player')
     game.physics.arcade.enable(sprite)
     sprite.body.collideWorldBounds = true
@@ -57,15 +58,19 @@ class Player {
         -Math.atan2(sprites[i].position.x - prev.position.x,
                     sprites[i].position.y - prev.position.y)
       if (game.physics.arcade.distanceBetween(sprites[i], prev)
-          > this.segmentDistance) {
-        sprites[i].body.velocity = this.velocityVector(sprites[i])
+          > this.SEGMENT_DISTANCE) {
+        this.updateVelocityVector(sprites[i])
       }
       prev = sprites[i]
     }
   }
 
-  velocityVector(sprite) {
-    return Phaser.Point.rotate(
-      new Phaser.Point(0, -this.speed), 0, 0, sprite.body.rotation, true)
+  updateVelocityVector(sprite) {
+    // rotation matrix
+    // [xp,yp] = [xcost-ysint,xsint+ycost]
+    // ...but x is always 0 so [-ysint,ycost]
+    let rotationRadians = sprite.body.rotation / this.DEGREES_PER_RADIAN
+    sprite.body.velocity.x = -this.SPEED * Math.sin(rotationRadians)
+    sprite.body.velocity.y =  this.SPEED * Math.cos(rotationRadians)
   }
 }
