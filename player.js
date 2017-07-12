@@ -7,11 +7,28 @@ class Player {
   get SEGMENT_DISTANCE()   { return 50 }
   get CENTER()             { return { x: game.width/2, y: game.height/2 } }
   get DEGREES_PER_RADIAN() { return 57.2958 }
+  get MAX_SIZE()           { return 100 }
+  get HEAD_SIZE()          { return 50 }
+  get SEGMENT_SIZE()       { return 20 }
 
-  constructor() {
+  constructor(initialSize) {
+    this.initialSize = initialSize
     this.head        = this.createSegment()
-    this.tail        = game.add.group()
     this.head.update = this.updateHeadSprite(this)
+    this.tail        = game.add.group()
+    for (let i = 0; i < this.MAX_SIZE; i++) {
+      let prev = this.tail.length === 0 ? this.head
+                                        : this.tail.children[this.tail.length-1]
+      let segment = this.createSegment(prev)
+      this.tail.add(segment)
+      if (i >= this.initialSize) {
+        segment.kill()
+      }
+    }
+  }
+
+  get length() {
+    return this._visibleTail().list.length
   }
 
   leftKey() {
@@ -34,9 +51,9 @@ class Player {
   }
 
   grow() {
-    let prev = this.tail.length === 0 ? this.head
-                                      : this.tail.children[this.tail.length-1]
-    this.tail.add(this.createSegment(prev))
+    let tip = this._visibleTail().list.pop()
+    let newTip = this.tail.getFirstDead(false, tip.x, tip.y).revive()
+    newTip.revive()
   }
 
   createSegment(prev) {
@@ -45,6 +62,9 @@ class Player {
     game.physics.arcade.enable(sprite)
     sprite.body.collideWorldBounds = true
     sprite.anchor.setTo(0.5, 0.5)
+    let size = prev ? this.SEGMENT_SIZE : this.HEAD_SIZE
+    let offset = sprite.width/2 - size/2
+    sprite.body.setSize(size, size, offset, offset)
     return sprite
   }
 
@@ -72,5 +92,9 @@ class Player {
     let rotationRadians = sprite.body.rotation / this.DEGREES_PER_RADIAN
     sprite.body.velocity.x = -this.SPEED * Math.sin(rotationRadians)
     sprite.body.velocity.y =  this.SPEED * Math.cos(rotationRadians)
+  }
+
+  _visibleTail() {
+    return this.tail.filter((c)=> { return c.alive })
   }
 }

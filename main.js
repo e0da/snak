@@ -2,10 +2,11 @@
 
 // TODO player should have higher Z-index than goals
 
-var game = new Phaser.Game(800, 600, Phaser.AUTO, 'game', {
-  preload: preload, create: create, update: update})
+var game = new Phaser.Game(800, 600, Phaser.CANVAS, 'game', {
+  preload: preload, create: create, update: update, render: render})
 
-var initialSize = 2
+const INITIAL_SIZE = 2
+const MAX_GOALS    = 10
 
 function preload() {
   window.ctx = this
@@ -51,10 +52,11 @@ function getHighScore() {
 }
 
 function initializeSprites() {
-  ctx.player = new Player()
+  ctx.player = new Player(INITIAL_SIZE)
   ctx.goals  = game.add.group()
-  for (let i = 0; i < initialSize; i++) {
-    ctx.player.grow()
+  for (let i = 0; i < MAX_GOALS; i++) {
+    let goal = ctx.goals.add(new Goal(0, 0).sprite)
+    goal.kill()
   }
 }
 
@@ -79,14 +81,7 @@ function update() {
   game.physics.arcade.overlap(ctx.player.head, ctx.goals, win)
   game.physics.arcade.overlap(ctx.player.head, ctx.player.tail, lose)
 
-  // Set score
-  ctx.score = ctx.player.tail.length - initialSize
-
-  renderScores()
-
-  if (window.DEBUG) {
-    renderDebugText()
-  }
+  ctx.score = ctx.player.length - INITIAL_SIZE
 }
 
 function win(_head, goal) {
@@ -117,7 +112,8 @@ function sometimes(probability, callback) {
 
 function addRandomGoal() {
   let position = randomEmptyPosition()
-  ctx.goals.add(new Goal(randomEmptyPosition()).sprite)
+  let goal = ctx.goals.getFirstDead(false, position.x, position.y)
+  goal && goal.revive()
 }
 
 // TODO Check whether it's empty :P
@@ -131,28 +127,18 @@ function round(num) {
   return Math.floor(num * precision) / precision
 }
 
-function renderScores() {
+function render() {
   ctx.scoreText.setText(ctx.score)
   ctx.highScoreText.setText(ctx.highScore)
-}
 
-function renderDebugText() {
-  let debug = document.querySelector('#debug')
-
-  let velx  = round(ctx.player.head.body.velocity.x)
-  let vely  = round(ctx.player.head.body.velocity.x)
-  let rot   = round(ctx.player.head.body.rotation)
-  let speed = round(ctx.player.head.body.speed)
-  let posx  = round(ctx.player.head.position.x)
-  let posy  = round(ctx.player.head.position.y)
-  let hvelx = round(ctx.player.head.body.velocity.x)
-  let hvely = round(ctx.player.head.body.velocity.y)
-
-  return debug.innerHTML = `
-    Head Velocity: ${hvelx},${hvely}
-    Speed: ${speed}
-    Position: ${posx},${posy}
-    Rotation: ${rot}
-    Velocity vector: ${velx},${vely}
-  `
+  if (window.DEBUG) {
+    game.debug.bodyInfo(ctx.player.head)
+    game.debug.body(ctx.player.head)
+    for (let i = 0; i < ctx.player.tail.length; i++) {
+      game.debug.body(ctx.player.tail.children[i])
+    }
+    for (let i = 0; i < ctx.goals.length; i++) {
+      game.debug.body(ctx.goals.children[i])
+    }
+  }
 }
