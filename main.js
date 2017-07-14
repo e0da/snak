@@ -2,7 +2,7 @@
 
 // TODO player should have higher Z-index than goals
 
-var game = new Phaser.Game(800, 600, Phaser.CANVAS, 'game', {
+var game = new Phaser.Game(1280, 720, Phaser.CANVAS, 'game', {
   preload: preload, create: create, update: update, render: render})
 
 const INITIAL_SIZE = 2
